@@ -12,6 +12,7 @@ public class HandleAlert {
 		driver.findElement(By.id("alertbtn")).click();
 		System.out.println(driver.switchTo().alert().getText());
 		driver.switchTo().alert().accept();
+		driver.close();
 	}
 
 }
