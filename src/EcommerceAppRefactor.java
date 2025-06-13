@@ -1,3 +1,4 @@
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -5,13 +6,21 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 public class EcommerceAppRefactor {
 
 	public static void main(String[] args) throws InterruptedException {
+		
 
 		WebDriver driver = new ChromeDriver();
+		// Implicit wait
+		//driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+		
+		// Explicit wait
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
 		driver.get("https://rahulshettyacademy.com/seleniumPractise/#/");
 
@@ -19,7 +28,7 @@ public class EcommerceAppRefactor {
 
 		addToCart(driver, pickedItems);
 		
-		checkout(driver, "rahulshettyacademy");
+		checkout(driver, wait, "rahulshettyacademy");
 
 		endTest(driver);
 
@@ -64,9 +73,14 @@ public class EcommerceAppRefactor {
 	}
 	
 	
-	public static void checkout(WebDriver driver, String promoCode) {
+	public static void checkout(WebDriver driver, WebDriverWait wait, String promoCode) {
 		driver.findElement(By.xpath("//button[contains(text(), 'PROCEED TO CHECKOUT')]")).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input.promoCOde")));
 		driver.findElement(By.cssSelector("input.promoCOde")).sendKeys(promoCode);
+		driver.findElement(By.cssSelector("button.promoBtn")).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.promoInfo")));
+		String promoMsg = driver.findElement(By.cssSelector("span.promoInfo")).getText();
+		Assert.assertEquals(promoMsg, "Code applied ..!");
 	}
 
 	public static void endTest(WebDriver driver) throws InterruptedException {
